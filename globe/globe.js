@@ -81,6 +81,7 @@ DAT.Globe = function(container, opts) {
       target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
   var zoomDampValue = 1000;
+  var distanceMaxLimit = 1000, distanceMinLimit =350;
   var distance = 100000, distanceTarget = 100000;
   var padding = 40;
   var PI_HALF = Math.PI / 2;
@@ -347,8 +348,8 @@ DAT.Globe = function(container, opts) {
 
   function zoom(delta) {
     distanceTarget -= delta;
-    distanceTarget = distanceTarget > 1000 ? 1000 : distanceTarget;
-    distanceTarget = distanceTarget < 350 ? 350 : distanceTarget;
+    distanceTarget = distanceTarget > distanceMaxLimit ? distanceMaxLimit : distanceTarget;
+    distanceTarget = distanceTarget < distanceMinLimit ? distanceMinLimit : distanceTarget;
   }
 
   function animate() {
@@ -359,26 +360,44 @@ DAT.Globe = function(container, opts) {
   function render() {
     
     zoom(curZoomSpeed);
-    // if(!canRotate){
-      
-    // }
-    rotation.x += (target.x - rotation.x) * 0.1;
-    rotation.y += (target.y - rotation.y) * 0.1;
-    distance += (distanceTarget - distance) * 0.3;
 
-    camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
-    camera.position.y = distance * Math.sin(rotation.y);
-    camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
+    //초기화
+    if(!canRotate){
+      rotation.x += (target.x - rotation.x) * 0.1;
+      rotation.y += (target.y - rotation.y) * 0.1;
+      distance += (distanceTarget - distance) * 0.3;
+  
+      camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
+      camera.position.y = distance * Math.sin(rotation.y);
+      camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
+
+      // if(distance == distanceMaxLimit){
+      //   canRotate=true;
+      // }
+    }
+    
+    else{
+      rotation.x = (target.x - rotation.x) * 0.1;
+      rotation.y = (target.y - rotation.y) * 0.1;
+      camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
+      camera.position.y = distance * Math.sin(rotation.y);
+      camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
+    }
+    //초기화 끝났으면 자전 
+  
+    
     
     //if(마우스가 클릭되어 있지 않다면)
     //그린다
-    console.log(camera.position.x)
-    console.log(camera.position.y)
-    console.log(camera.position.z)
+    console.log("----------------")
+    console.log("rotaion.x : " + rotation.x)
+    console.log("rotaion.y : " + rotation.y)
+    console.log("distance : " + distance)
+    console.log("x : "+camera.position.x)
+    console.log("y : "+camera.position.y)
+    console.log("z : "+camera.position.z)
 
-    
     camera.lookAt(mesh.position);
-
     renderer.render(scene, camera);
   }
 
