@@ -67,7 +67,7 @@ DAT.Globe = function(container, opts) {
       ].join('\n')
     }
   };
-
+  var canRotate = false;
   var camera, scene, renderer, w, h;
   var mesh, atmosphere, point;
 
@@ -157,6 +157,7 @@ DAT.Globe = function(container, opts) {
     window.addEventListener('resize', onWindowResize, false);
 
     container.addEventListener('mouseover', function() {
+      canRotate=True
       overRenderer = true;
     }, false);
 
@@ -271,8 +272,9 @@ DAT.Globe = function(container, opts) {
   }
 
   function onMouseDown(event) {
+    canRotate=False;
     event.preventDefault();
-
+    
     container.addEventListener('mousemove', onMouseMove, false);
     container.addEventListener('mouseup', onMouseUp, false);
     container.addEventListener('mouseout', onMouseOut, false);
