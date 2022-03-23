@@ -80,7 +80,7 @@ DAT.Globe = function(container, opts) {
   var rotation = { x: 0, y: 0 },
       target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
-
+  var zoomDampValue = 1000;
   var distance = 100000, distanceTarget = 100000;
   var padding = 40;
   var PI_HALF = Math.PI / 2;
@@ -148,6 +148,8 @@ DAT.Globe = function(container, opts) {
 
     container.appendChild(renderer.domElement);
 
+    // container.addEventListener('mouseup', 함수, false);
+
     container.addEventListener('mousedown', onMouseDown, false);
 
     container.addEventListener('mousewheel', onMouseWheel, false);
@@ -157,7 +159,7 @@ DAT.Globe = function(container, opts) {
     window.addEventListener('resize', onWindowResize, false);
 
     container.addEventListener('mouseover', function() {
-      canRotate=True
+      
       overRenderer = true;
     }, false);
 
@@ -272,11 +274,12 @@ DAT.Globe = function(container, opts) {
   }
 
   function onMouseDown(event) {
-    canRotate=False;
-    event.preventDefault();
     
+    event.preventDefault();
     container.addEventListener('mousemove', onMouseMove, false);
     container.addEventListener('mouseup', onMouseUp, false);
+    
+    // container.removeEventListener('mouseout', 회전하는 함수, false);
     container.addEventListener('mouseout', onMouseOut, false);
 
     mouseOnDown.x = - event.clientX;
@@ -292,7 +295,7 @@ DAT.Globe = function(container, opts) {
     mouse.x = - event.clientX;
     mouse.y = event.clientY;
 
-    var zoomDamp = distance/1000;
+    var zoomDamp = distance/zoomDampValue;
 
     target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
     target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
@@ -305,6 +308,7 @@ DAT.Globe = function(container, opts) {
     container.removeEventListener('mousemove', onMouseMove, false);
     container.removeEventListener('mouseup', onMouseUp, false);
     container.removeEventListener('mouseout', onMouseOut, false);
+    // containter.addEventListener('mouseout', 회전하는 함수, false);
     container.style.cursor = 'auto';
   }
 
@@ -353,8 +357,11 @@ DAT.Globe = function(container, opts) {
   }
 
   function render() {
+    
     zoom(curZoomSpeed);
-
+    // if(!canRotate){
+      
+    // }
     rotation.x += (target.x - rotation.x) * 0.1;
     rotation.y += (target.y - rotation.y) * 0.1;
     distance += (distanceTarget - distance) * 0.3;
@@ -362,7 +369,14 @@ DAT.Globe = function(container, opts) {
     camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
     camera.position.y = distance * Math.sin(rotation.y);
     camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
+    
+    //if(마우스가 클릭되어 있지 않다면)
+    //그린다
+    console.log(camera.position.x)
+    console.log(camera.position.y)
+    console.log(camera.position.z)
 
+    
     camera.lookAt(mesh.position);
 
     renderer.render(scene, camera);
