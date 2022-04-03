@@ -85,6 +85,8 @@ DAT.Globe = function(container, opts) {
   var distance = 100000, distanceTarget = 100000;
   var padding = 40;
   var PI_HALF = Math.PI / 2;
+  
+  var past_distance, past_x =0.0 , past_y=0.0, past_z=0.0;
 
   function init() {
 
@@ -360,7 +362,8 @@ DAT.Globe = function(container, opts) {
   function render() {
     
     zoom(curZoomSpeed);
-
+    
+    
     //초기화
     if(!canRotate){
       rotation.x += (target.x - rotation.x) * 0.1;
@@ -370,15 +373,27 @@ DAT.Globe = function(container, opts) {
       camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
       camera.position.y = distance * Math.sin(rotation.y);
       camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
+            
+      if(
+        (camera.position.x).toFixed(12) == past_x.toFixed(12) && 
+        (camera.position.y).toFixed(12) == past_y.toFixed(12) &&
+        (camera.position.z).toFixed(12) == past_z.toFixed(12)
+      ){
+        canRotate=true;
+      }          
 
-      // if(distance == distanceMaxLimit){
-      //   canRotate=true;
-      // }
+      // past_x = camera.position.x      
+      // past_y = camera.position.y      
+      // past_z = camera.position.z            
     }
     
+    //클릭 가능해야하고, 멈춰야 자전함. 
+
     else{
       rotation.x = (target.x - rotation.x) * 0.1;
+      console.log("rotation.x" , rotation.x);    
       rotation.y = (target.y - rotation.y) * 0.1;
+      console.log("rotation.y" , rotation.y);
       camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
       camera.position.y = distance * Math.sin(rotation.y);
       camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
@@ -390,12 +405,13 @@ DAT.Globe = function(container, opts) {
     //if(마우스가 클릭되어 있지 않다면)
     //그린다
     console.log("----------------")
+    console.log(canRotate)
     console.log("rotaion.x : " + rotation.x)
     console.log("rotaion.y : " + rotation.y)
     console.log("distance : " + distance)
-    console.log("x : "+camera.position.x)
-    console.log("y : "+camera.position.y)
-    console.log("z : "+camera.position.z)
+    console.log("camera x : "+camera.position.x)
+    console.log("camera y : "+camera.position.y)
+    console.log("camera z : "+camera.position.z)
 
     camera.lookAt(mesh.position);
     renderer.render(scene, camera);
