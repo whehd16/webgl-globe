@@ -285,7 +285,7 @@ DAT.Globe = function (container, opts) {
     point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
     point.position.y = 200 * Math.cos(phi);
     point.position.z = 200 * Math.sin(phi) * Math.sin(theta);
-
+    console.log(point.geometry);
     point.lookAt(mesh.position);
 
     point.scale.z = Math.max(size, 0.1); // avoid non-invertible matrix
@@ -293,6 +293,7 @@ DAT.Globe = function (container, opts) {
 
     for (var i = 0; i < point.geometry.faces.length; i++) {
       point.geometry.faces[i].color = color;
+      // console.log(color);
     }
     if (point.matrixAutoUpdate) {
       point.updateMatrix();
@@ -301,6 +302,7 @@ DAT.Globe = function (container, opts) {
   }
 
   function onMouseDown(event) {
+    canRotate = false;
     event.preventDefault();
     container.addEventListener("mousemove", onMouseMove, false);
     container.addEventListener("mouseup", onMouseUp, false);
@@ -331,6 +333,7 @@ DAT.Globe = function (container, opts) {
   }
 
   function onMouseUp(event) {
+    canRotate = true;
     container.removeEventListener("mousemove", onMouseMove, false);
     container.removeEventListener("mouseup", onMouseUp, false);
     container.removeEventListener("mouseout", onMouseOut, false);
@@ -389,7 +392,9 @@ DAT.Globe = function (container, opts) {
 
     //초기화
     if (!canRotate) {
-      // if (true) {
+      // console.log(target.x, target.y);
+      // console.log((target.x - rotation.x) * 0.1);
+      // console.log((target.y - rotation.y) * 0.1);
       rotation.x += (target.x - rotation.x) * 0.1;
       rotation.y += (target.y - rotation.y) * 0.1;
       distance += (distanceTarget - distance) * 0.3;
@@ -400,14 +405,14 @@ DAT.Globe = function (container, opts) {
       camera.position.z =
         distance * Math.cos(rotation.x) * Math.cos(rotation.y);
 
-      console.log(camera.position.x.toFixed(12), past_x.toFixed(12));
-      console.log(camera.position.y.toFixed(12), past_y.toFixed(12));
-      console.log(camera.position.z.toFixed(12), past_z.toFixed(12));
+      // console.log(camera.position.x.toFixed(12), past_x.toFixed(12));
+      // console.log(camera.position.y.toFixed(12), past_y.toFixed(12));
+      // console.log(camera.position.z.toFixed(12), past_z.toFixed(12));
 
       if (
-        camera.position.x.toFixed(12) == past_x.toFixed(12) &&
-        camera.position.y.toFixed(12) == past_y.toFixed(12) &&
-        camera.position.z.toFixed(12) == past_z.toFixed(12)
+        camera.position.x.toFixed(1) == past_x.toFixed(1) &&
+        camera.position.y.toFixed(1) == past_y.toFixed(1) &&
+        camera.position.z.toFixed(1) == past_z.toFixed(1)
       ) {
         canRotate = true;
       }
@@ -419,10 +424,9 @@ DAT.Globe = function (container, opts) {
 
     //클릭 가능해야하고, 멈춰야 자전함.
     else {
-      rotation.x = (target.x - rotation.x) * 0.1;
-      console.log("rotation.x", rotation.x);
-      rotation.y = (target.y - rotation.y) * 0.1;
-      console.log("rotation.y", rotation.y);
+      // console.log(camera.position.x, camera.position.y, camera.position.z);
+      rotation.x += 0.001;
+      rotation.y -= 0.0005;
       camera.position.x =
         distance * Math.sin(rotation.x) * Math.cos(rotation.y);
       camera.position.y = distance * Math.sin(rotation.y);
@@ -433,14 +437,14 @@ DAT.Globe = function (container, opts) {
 
     //if(마우스가 클릭되어 있지 않다면)
     //그린다
-    console.log("----------------");
-    console.log(canRotate);
-    console.log("rotaion.x : " + rotation.x);
-    console.log("rotaion.y : " + rotation.y);
-    console.log("distance : " + distance);
-    console.log("camera x : " + camera.position.x);
-    console.log("camera y : " + camera.position.y);
-    console.log("camera z : " + camera.position.z);
+    // console.log("----------------");
+    // console.log(canRotate);
+    // console.log("rotaion.x : " + rotation.x);
+    // console.log("rotaion.y : " + rotation.y);
+    // console.log("distance : " + distance);
+    // console.log("camera x : " + camera.position.x);
+    // console.log("camera y : " + camera.position.y);
+    // console.log("camera z : " + camera.position.z);
 
     camera.lookAt(mesh.position);
     renderer.render(scene, camera);
